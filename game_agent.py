@@ -98,9 +98,18 @@ def custom_score_2(game, player):
 
     player_location = game.get_player_location(player)
     opponent_location = game.get_player_location(game.get_opponent(player))
+    if opponent_location is None:
+        if player_location == (3,3):
+            return INF
+        else:
+            return -INF
 
-    distance = max(abs(player_location[0]-opponent_location[0]), abs(player_location[1]-opponent_location[1]))
-    return 1.0 / distance
+    player_moves = game.get_legal_moves(player)
+    opponent_moves = game.get_legal_moves(game.get_opponent(player))
+    distance = abs(player_location[0]-opponent_location[0]) + abs(player_location[1]-opponent_location[1])
+
+
+    return float(len(player_moves) - len(opponent_moves)) * 1.0/distance
 
 
     # # TODO: finish this function!
@@ -143,8 +152,12 @@ def custom_score_3(game, player):
     player_location = game.get_player_location(player)
     opponent_location = game.get_player_location(game.get_opponent(player))
 
+
+    if opponent_location is None:
+        opponent_location = (3,3)
+
     distance = max(abs(player_location[0]-opponent_location[0]), abs(player_location[1]-opponent_location[1]))
-    return 1.0 / distance
+    return distance
 
 
 

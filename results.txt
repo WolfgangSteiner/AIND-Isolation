@@ -1,0 +1,117 @@
+Match #   Opponent   improved_score
+                        Won | Lost
+    1       Random      887 |  113
+    2       MM_Open     582 |  418
+    3      MM_Center    746 |  254
+    4     MM_Improved   539 |  461
+    5       AB_Open     501 |  499
+    6      AB_Center    487 |  513
+    7     AB_Improved   482 |  518
+--------------------------------------------------------------------------
+           Win Rate:      60.3%
+
+
+ Match #   Opponent   chase + center
+                        Won | Lost
+    1       Random      177 |  23
+    2       MM_Open     114 |  86
+    3      MM_Center    157 |  43
+    4     MM_Improved   102 |  98
+    5       AB_Open     96  |  104
+    6      AB_Center    93  |  107
+    7     AB_Improved   97  |  103
+--------------------------------------------------------------------------
+           Win Rate:      59.7%
+
+
+Match #   Opponent        flee
+                        Won | Lost
+    1       Random      177 |  23
+    2       MM_Open     124 |  76
+    3      MM_Center    154 |  46
+    4     MM_Improved   112 |  88
+    5       AB_Open     97  |  103
+    6      AB_Center    95  |  105
+    7     AB_Improved   103 |  97
+--------------------------------------------------------------------------
+           Win Rate:      61.6%
+
+
+
+==========================================================================
+
+    player_location = game.get_player_location(player)
+    opponent_location = game.get_player_location(game.get_opponent(player))
+    if opponent_location is None:
+        if player_location == (3,3):
+            return INF
+        else:
+            return -INF
+
+    player_moves = game.get_legal_moves(player)
+    opponent_moves = game.get_legal_moves(game.get_opponent(player))
+    distance = max(abs(player_location[0]-opponent_location[0]), abs(player_location[1]-opponent_location[1]))
+
+
+    return float(len(player_moves) - len(opponent_moves)) * 1.0 / distance
+
+
+ Match #   Opponent   improved_score * 1.0/dist_to_opponent
+                        Won | Lost
+    1       Random      912 |  88
+    2       MM_Open     599 |  401
+    3      MM_Center    794 |  206
+    4     MM_Improved   577 |  423
+    5       AB_Open     516 |  484
+    6      AB_Center    502 |  498
+    7     AB_Improved   530 |  470
+--------------------------------------------------------------------------
+           Win Rate:      63.3%
+
+
+==========================================================================
+
+    player_location = game.get_player_location(player)
+    opponent_location = game.get_player_location(game.get_opponent(player))
+    if opponent_location is None:
+        if player_location == (3,3):
+            return INF
+        else:
+            return -INF
+
+    player_moves = game.get_legal_moves(player)
+    opponent_moves = game.get_legal_moves(game.get_opponent(player))
+    distance = max(abs(player_location[0]-opponent_location[0]), abs(player_location[1]-opponent_location[1]))
+
+
+    return float(len(player_moves) - len(opponent_moves)) * distance
+
+
+ Match #   Opponent   improve_score * dist_to_opponent
+                        Won | Lost
+    1       Random      882 |  118
+    2       MM_Open     605 |  395
+    3      MM_Center    796 |  204
+    4     MM_Improved   561 |  439
+    5       AB_Open     512 |  488
+    6      AB_Center    507 |  493
+    7     AB_Improved   539 |  461
+--------------------------------------------------------------------------
+           Win Rate:      62.9%
+
+
+==========================================================================
+
+
+
+Match #   Opponent   custom_score_2
+                        Won | Lost
+    1       Random      901 |  99
+    2       MM_Open     593 |  407
+    3      MM_Center    789 |  211
+    4     MM_Improved   553 |  447
+    5       AB_Open     506 |  494
+    6      AB_Center    481 |  519
+    7     AB_Improved   534 |  466
+--------------------------------------------------------------------------
+           Win Rate:      62.2%
