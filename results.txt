@@ -102,7 +102,19 @@ Match #   Opponent        flee
 
 ==========================================================================
 
+  player_location = game.get_player_location(player)
+    opponent_location = game.get_player_location(game.get_opponent(player))
+    if opponent_location is None:
+        if player_location == (3,3):
+            return INF
+        else:
+            return -INF
 
+    player_moves = game.get_legal_moves(player)
+    opponent_moves = game.get_legal_moves(game.get_opponent(player))
+    distance = abs(player_location[0]-opponent_location[0]) + abs(player_location[1]-opponent_location[1])
+
+    return float(len(player_moves) - len(opponent_moves)) * 1.0/distance
 
 Match #   Opponent   custom_score_2
                         Won | Lost
