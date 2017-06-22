@@ -12,6 +12,33 @@ class SearchTimeout(Exception):
     pass
 
 
+def start_position_center(game, player, diagonal=False):
+    assert game.move_count < 2
+
+    center = (game.width // 2, game.height // 2)
+    player_location = game.get_player_location(player)
+    blank_spaces = game.get_blank_spaces()
+    move_count = game.move_count
+
+    if center in blank_spaces:
+        return 1000.0 if player_location == center else -1000.0
+    else:
+        next_fields = ((2,2),(4,4),(2,4),(4,2)) if diagonal else ((2,3),(4,3),(3,2),(3,4))
+        return 1000.0 if player_location in next_fields else -1000.0
+
+
+def player_moves(game, player):
+    return game.get_legal_moves(player)
+
+
+def opponent_moves(game, player):
+    return game.get_legal_moves(game.get_opponent(player))
+
+
+def move_difference(game, player):
+    return float(len(player_moves(game, player)) - len(opponent_moves(game, player)))
+
+
 def custom_score(game, player):
     """Calculate the heuristic value of a game state from the point of view
     of the given player.
@@ -37,34 +64,15 @@ def custom_score(game, player):
         The heuristic value of the current game state to the specified player.
     """
 
-    center = (game.width // 2, game.height // 2)
-    player_location = game.get_player_location(player)
-    blank_spaces = game.get_blank_spaces()
-    move_count = game.move_count
+    if game.move_count < 2:
+        return start_position_center(game, player)
 
-    if center in blank_spaces and move_count <=2:
-        if player_location == center:
-            return 1000
-        else:
-            return -1000
-    elif game.move_count == 2:
-        if player_location in ((2,3),(4,3),(3,2),(3,4)):
-            return 1000
-        elif player_location in ((2,2), (4,4), (2,4), (4,2)):
-            return 500
-        else:
-            return -1000
-
-    # TODO: finish this function!
     if game.is_winner(player):
         return INF
     elif game.is_loser(player):
         return -INF
 
-    player_moves = game.get_legal_moves(player)
-    opponent_moves = game.get_legal_moves(game.get_opponent(player))
-
-    return float(len(player_moves) - len(opponent_moves))
+    return move_difference(game, player)
 
 
 def custom_score_2(game, player):
@@ -99,17 +107,16 @@ def custom_score_2(game, player):
     player_location = game.get_player_location(player)
     opponent_location = game.get_player_location(game.get_opponent(player))
     if opponent_location is None:
-        if player_location == (3,3):
+        if player_location == (3, 3):
             return INF
         else:
             return -INF
 
     player_moves = game.get_legal_moves(player)
     opponent_moves = game.get_legal_moves(game.get_opponent(player))
-    distance = abs(player_location[0]-opponent_location[0]) + abs(player_location[1]-opponent_location[1])
+    distance = max(abs(player_location[0] - opponent_location[0]), abs(player_location[1] - opponent_location[1]))
 
-
-    return float(len(player_moves) - len(opponent_moves)) * 1.0/distance
+    return float(len(player_moves) - len(opponent_moves)) * distance
 
 
     # # TODO: finish this function!
