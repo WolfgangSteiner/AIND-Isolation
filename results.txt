@@ -127,3 +127,77 @@ Match #   Opponent   custom_score_2
     7     AB_Improved   534 |  466
 --------------------------------------------------------------------------
            Win Rate:      62.2%
+
+==========================================================================
+    if game.move_count < 2:
+        return start_position_center(game, player)
+
+    if game.is_winner(player):
+        return INF
+    elif game.is_loser(player):
+        return -INF
+
+    return move_difference(game, player)
+
+ Match #   Opponent   custom_score
+                        Won | Lost
+    1       Random      899 |  101
+    2       MM_Open     581 |  419
+    3      MM_Center    728 |  272
+    4     MM_Improved   507 |  493
+    5       AB_Open     493 |  507
+    6      AB_Center    479 |  521
+    7     AB_Improved   504 |  496
+--------------------------------------------------------------------------
+           Win Rate:      59.9%
+
+==========================================================================
+
+    if game.move_count < 2:
+        return start_position_center(game, player, diagonal=True)
+
+    if game.is_winner(player):
+        return INF
+    elif game.is_loser(player):
+        return -INF
+
+    return move_difference(game, player)
+
+
+
+Match #   Opponent   custom_score
+                        Won | Lost
+    1       Random      884 |  116
+    2       MM_Open     585 |  415
+    3      MM_Center    768 |  232
+    4     MM_Improved   502 |  498
+    5       AB_Open     495 |  505
+    6      AB_Center    475 |  525
+    7     AB_Improved   509 |  491
+--------------------------------------------------------------------------
+           Win Rate:      60.3%
+
+
+==========================================================================
+
+    if game.move_count < 2:
+        return start_position_center(game, player,second_move="one_move_away")
+
+    if game.is_winner(player):
+        return INF
+    elif game.is_loser(player):
+        return -INF
+
+    return move_difference(game, player)
+
+Match #   Opponent   custom_score
+                        Won | Lost
+    1       Random      897 |  103
+    2       MM_Open     570 |  430
+    3      MM_Center    784 |  216
+    4     MM_Improved   540 |  460
+    5       AB_Open     494 |  506
+    6      AB_Center    468 |  532
+    7     AB_Improved   508 |  492
+--------------------------------------------------------------------------
+           Win Rate:      60.9%
