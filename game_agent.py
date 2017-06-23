@@ -12,19 +12,37 @@ class SearchTimeout(Exception):
     pass
 
 
-def start_position_center(game, player, diagonal=False):
+def player_distance(game, player):
+    player_location = game.get_player_location(player)
+    opponent_location = game.get_player_location(game.get_opponent(player))
+    return abs(player_location[0]-opponent_location[0]), abs(player_location[1]-opponent_location[1])
+
+
+def start_position_center(game, player, second_move="one_move_away"):
     assert game.move_count < 2
 
     center = (game.width // 2, game.height // 2)
     player_location = game.get_player_location(player)
+    opponent_location = game.get_player_location(game.get_opponent(player))
     blank_spaces = game.get_blank_spaces()
     move_count = game.move_count
 
-    if center in blank_spaces:
+    if (second_move=="one_move_away" and game.move_count == 1) or center in blank_spaces:
         return 1000.0 if player_location == center else -1000.0
     else:
-        next_fields = ((2,2),(4,4),(2,4),(4,2)) if diagonal else ((2,3),(4,3),(3,2),(3,4))
-        return 1000.0 if player_location in next_fields else -1000.0
+        assert oppponent_location is not None
+        if second_move == "one_move_away":
+            dist = player_distance(game, player)
+            return 1000.0 if max(dist) == 2 and min(dist==1) else -1000.0
+        else:
+            if second_move == "orthogonal":
+                next_fields = ((2,3),(4,3),(3,2),(3,4))
+            elif second_move == "diagonal":
+                next_fields = ((2,2),(4,4),(2,4),(4,2))
+            else:
+                assert(False)
+
+            return 1000.0 if player_location in next_fields else -1000.0
 
 
 def player_moves(game, player):
@@ -65,7 +83,7 @@ def custom_score(game, player):
     """
 
     if game.move_count < 2:
-        return start_position_center(game, player)
+        return start_position_center(game, player,second_move="one_move_away")
 
     if game.is_winner(player):
         return INF
