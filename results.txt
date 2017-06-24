@@ -71,6 +71,34 @@ Match #   Opponent        flee
 
 ==========================================================================
 
+   if opponent_location is None:
+           if player_location == (3,3):
+	               return INF
+		               else:
+			                   return -INF
+
+    distance = max(player_distance(game,player))
+        return move_difference(game,player) * 1.0 / distance
+
+
+
+Match #   Opponent   custom_score
+                        Won | Lost
+			    1       Random      878 |  122
+			        2       MM_Open     467 |  533
+				    3      MM_Center    712 |  288
+				        4     MM_Improved   444 |  556
+					    5       AB_Open     361 |  639
+					        6      AB_Center    340 |  660
+						    7     AB_Improved   355 |  645
+						    --------------------------------------------------------------------------
+						               Win Rate:      50.8%
+
+
+
+
+==========================================================================
+
     player_location = game.get_player_location(player)
     opponent_location = game.get_player_location(game.get_opponent(player))
     if opponent_location is None:
@@ -271,3 +299,28 @@ Match #   Opponent   custom_score_2
     7     AB_Improved   501 |  499
 --------------------------------------------------------------------------
            Win Rate:      59.5%
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ Match #   Opponent    AB_Improved   AB_Custom   AB_Custom_2  AB_Custom_3
+                        Won | Lost   Won | Lost   Won | Lost   Won | Lost
+    1       Random      90  |  10    89  |  11    94  |   6    95  |   5
+    2       MM_Open     68  |  32    59  |  41    61  |  39    59  |  41
+    3      MM_Center    70  |  30    71  |  29    73  |  27    82  |  18
+    4     MM_Improved   52  |  48    57  |  43    48  |  52    44  |  56
+    5       AB_Open     51  |  49    56  |  44    48  |  52    55  |  45
+    6      AB_Center    55  |  45    53  |  47    49  |  51    50  |  50
+    7     AB_Improved   53  |  47    49  |  51    54  |  46    53  |  47
+--------------------------------------------------------------------------
+           Win Rate:      62.7%        62.0%        61.0%        62.6%

@@ -12,13 +12,24 @@ class SearchTimeout(Exception):
     pass
 
 
+def distance(pos1, pos2):
+    return (abs(pos1[0]-pos2[0]), abs(pos1[1]-pos2[1]))
+
+
 def player_distance(game, player):
     player_location = game.get_player_location(player)
     opponent_location = game.get_player_location(game.get_opponent(player))
-    return abs(player_location[0]-opponent_location[0]), abs(player_location[1]-opponent_location[1])
+    return distance(player_location, opponent_location)
 
 
-def start_position_center(game, player, second_move="one_move_away"):
+def manhatten_distance_to_center(game, player):
+    player_location = game.get_player_location(player)
+    center = (game.width // 2, game.height // 2)
+    dist = distance(player_location, center)
+    return max(0.001, float(dist[0] + dist[1]))
+
+
+def start_position_center(game, player, second_move="orthogonal"):
     assert game.move_count < 2
 
     center = (game.width // 2, game.height // 2)
@@ -82,15 +93,18 @@ def custom_score(game, player):
         The heuristic value of the current game state to the specified player.
     """
 
-    if game.move_count < 2:
-        return start_position_center(game, player,second_move="one_move_away")
-
     if game.is_winner(player):
         return INF
     elif game.is_loser(player):
         return -INF
 
-    return move_difference(game, player)
+    player_location = game.get_player_location(player)
+    opponent_location = game.get_player_location(game.get_opponent(player))
+    player_moves = game.get_legal_moves(player)
+    opponent_moves = game.get_legal_moves(game.get_opponent(player))
+    distance = max(abs(player_location[0]-opponent_location[0]), abs(player_location[1]-opponent_location[1]))
+
+    return float(len(player_moves) - len(opponent_moves)) * 1.0 / distance
 
 
 def custom_score_2(game, player):
@@ -116,25 +130,15 @@ def custom_score_2(game, player):
         The heuristic value of the current game state to the specified player.
     """
 
-    # TODO: finish this function!
+#    if game.move_count < 2:
+#        return start_position_center(game, player,second_move="orthogonal")
+
     if game.is_winner(player):
         return INF
     elif game.is_loser(player):
         return -INF
 
-    player_location = game.get_player_location(player)
-    opponent_location = game.get_player_location(game.get_opponent(player))
-    if opponent_location is None:
-        if player_location == (3, 3):
-            return INF
-        else:
-            return -INF
-
-    player_moves = game.get_legal_moves(player)
-    opponent_moves = game.get_legal_moves(game.get_opponent(player))
-    distance = max(abs(player_location[0] - opponent_location[0]), abs(player_location[1] - opponent_location[1]))
-
-    return float(len(player_moves) - len(opponent_moves)) * distance
+    return 1.0 / manhatten_distance_to_center(game,player)
 
 
     # # TODO: finish this function!
@@ -168,22 +172,15 @@ def custom_score_3(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    # TODO: finish this function!
     if game.is_winner(player):
         return INF
     elif game.is_loser(player):
         return -INF
 
-    player_location = game.get_player_location(player)
-    opponent_location = game.get_player_location(game.get_opponent(player))
+    player_moves = game.get_legal_moves(player)
+    opponent_moves = game.get_legal_moves(game.get_opponent(player))
 
-
-    if opponent_location is None:
-        opponent_location = (3,3)
-
-    distance = max(abs(player_location[0]-opponent_location[0]), abs(player_location[1]-opponent_location[1]))
-    return distance
-
+    return float(len(player_moves) - 2.0 * len(opponent_moves))
 
 
 class IsolationPlayer:
@@ -365,28 +362,30 @@ class AlphaBetaPlayer(IsolationPlayer):
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
-        if not game.get_legal_moves():
+        legal_moves = game.get_legal_moves()
+
+        if not legal_moves:
             return self.score(game, self), (-1,-1)
         elif depth == 0:
-            best_move = game.get_legal_moves()[0]
+            best_move = legal_moves[0]
             return self.score(game, self), best_move
 
         min_value = INF
         best_move = (-1,-1)
-        for move in game.get_legal_moves():
+        for move in legal_moves:
             if best_move == (-1,-1):
                 best_move = move
             new_game = game.forecast_move(move)
-            value, _ = self.__max_value(new_game, alpha, beta, depth-1)
+            current_value, _ = self.__max_value(new_game, alpha, beta, depth-1)
 
-            if value <= min_value:
-                min_value = value
+            if current_value <= min_value:
+                min_value = current_value
                 best_move = move
 
-                if min_value <= alpha:
-                    return min_value, best_move
+            if min_value <= alpha:
+                return min_value, best_move
 
-                beta = min(beta, min_value)
+            beta = min(beta, min_value)
 
         return min_value, best_move
 
@@ -395,28 +394,30 @@ class AlphaBetaPlayer(IsolationPlayer):
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
-        if not game.get_legal_moves():
+        legal_moves = game.get_legal_moves()
+
+        if not legal_moves:
             return self.score(game, self), (-1,-1)
         elif depth == 0:
-            best_move = game.get_legal_moves()[0]
+            best_move = legal_moves[0]
             return self.score(game, self), best_move
 
         max_value = -INF
         best_move = (-1,1)
-        for move in game.get_legal_moves():
+        for move in legal_moves:
             if best_move == (-1,-1):
                 best_move = move
             new_game = game.forecast_move(move)
-            value, _ = self.__min_value(new_game, alpha, beta, depth-1)
+            current_value, _ = self.__min_value(new_game, alpha, beta, depth-1)
 
-            if value >= max_value:
-                max_value = value
+            if current_value >= max_value:
+                max_value = current_value
                 best_move = move
 
-                if max_value >= beta:
-                    return max_value, best_move
+            if max_value >= beta:
+                return max_value, best_move
 
-                alpha = max(alpha, max_value)
+            alpha = max(alpha, max_value)
 
         return max_value, best_move
 
